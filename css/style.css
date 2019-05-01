@@ -1,0 +1,129 @@
+body {
+	background-color: #111;
+	color: #fff;
+	font-family: proxima-nova, sans-serif;
+}
+
+div{
+	margin: 0 auto;
+}
+
+p {
+	max-width: 600px;
+	font-size: 1.2em;
+	margin: 0 auto;
+}
+
+div.plot {
+	margin: 0 auto;
+	margin-top: 50vh;
+	width: 100vw;
+	height: 100vh;
+	border: dotted 1px orange;
+}
+
+div.outer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+div.inner {
+	position: relative;
+}
+
+p.centerText {
+	position: absolute;
+	text-align: center;
+}
+
+p.centerText span {
+	line-height: 0.8em;
+	font-size: 0.8em;
+	color: #777;
+}
+
+
+div.intro {
+	width: 100%;
+}
+
+div.title {
+	color: #fff;
+	width: 100vw;
+	height: 75vh;
+	margin: 0 auto;
+    padding-top: 25vh;
+    background-image: url("../img/car.jpg");
+    background-size: cover;
+    background-position: center;
+    text-shadow: 1px 0.5px 0.5px #555;
+}
+
+div.title h4,h5 {
+	max-width: 500px;
+	margin: 0 auto;
+	margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+}
+
+h4 {
+    font-size: 1.4em;
+}
+
+div.scrolly {
+	width:100%;
+}
+
+
+article {
+  position: relative;
+  width: 35vw;
+  margin-top: -85vh;
+  margin-left: 4vw;
+  padding-right: 2vw;
+
+}
+
+figure.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  width: 100vw;
+  margin-left: 0;
+  top: 0;
+}
+
+div.cloud {
+	width: 100vw;
+	height: 100vh;
+}
+
+div.step {
+	background-color: rgba(255,255,255,0.05);
+	border-radius: 5px;
+}
+
+div.step p {
+	padding: 10px;
+}
+
+div.beforeScrolly {
+	margin-top: 75px;
+}
+
+div.beforeScrolly p {
+	margin-top: 25px;
+}
+
+
+
+
+
+
+
+
+

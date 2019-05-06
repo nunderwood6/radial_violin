@@ -47,6 +47,13 @@ var parkNames = [
   "Denali_National_Park"
 ];
 
+ parkNames = [ "Olympic_National_Park",
+  "Acadia_National_Park",
+  "Everglades_National_Park",
+  "Denali_National_Park",
+  "Zion_National_Park"
+  ]
+
 
 //console.log(w);
 //hexbin generator
@@ -418,28 +425,28 @@ Promise.all([
     for(var box of boxes){
       allParkNames.push(box.properties["UNIT_NAME"].replace( / /g, "_"));
     }
-    //get json urls
-    var files = [];
-    for(var park of parkNames){
-       // console.log(park)
-        files.push(`data/photos/${park}.json`);
-    }
-    //get csv urls
-    // var csvs = [];
+    // //get json urls
+    // var files = [];
     // for(var park of parkNames){
-    //   csvs.push(`data/euclidean/${park}.csv`)
-    // }
+    //    // console.log(park)
+    //     files.push(`data/photos/${park}.json`);
+    //}
+    //get csv urls
+    var csvs = [];
+    for(var park of parkNames){
+      csvs.push(`data/euclidean/${park}.csv`)
+    }
 
      //build array of promises
      var promises = [];
 
-files.forEach(function(url) {
-    promises.push(d3.json(url))
-});
-
-// csvs.forEach(function(url) {
-//     promises.push(d3.csv(url))
+// files.forEach(function(url) {
+//     promises.push(d3.json(url))
 // });
+
+csvs.forEach(function(url) {
+    promises.push(d3.csv(url))
+});
 
 Promise.all(promises).then(function(values) {
     //everything using data in here!
@@ -474,19 +481,19 @@ var randomLogTransform = d3.scaleLog()
 
   var sumstat = [];
 
-    for(var park of data){
+console.log(parkNames.length);
+    for(var j = 0; j < parkNames.length; j++){
+        console.log(j);
+        var park = data[j];
+        var parkName = parkNames[j];
 
-        var photosDist = [];
+        for(var photo of park){
+            photo["name"] = parkName;
+        }
 
-        for(var photo of park.features){
-         photosDist.push({
-          "name": photo.properties.park,
-          "dist": randomLogTransform(Math.random()+0.01)
-         });
-      }
 
-    var dom = d3.extent(photosDist.map(photo => photo.dist));
-     // console.log(dom);
+      var dom = d3.extent(park.map(photo => +photo.distance));
+
 
      var log = d3.scaleLog()
                     .domain(dom)
@@ -501,11 +508,11 @@ var randomLogTransform = d3.scaleLog()
       var parkSumstat = d3.nest()  // nest function allows to group the calculation per level of a factor
         .key(function(d) { return d.name})
         .rollup(function(d) {   // For each key..
-          input = d.map(function(g) { return +g.dist;})    // Keep the variable called Sepal_Length
+          input = d.map(function(g) { return +g.distance;})    // Keep the variable called Sepal_Length
           bins = histogram(input)   // And compute the binning on it.
           return(bins)
         })
-        .entries(photosDist);
+        .entries(park);
 
         //calculate max number in a bin for each park
         var maxNum = 0;
@@ -521,7 +528,8 @@ var randomLogTransform = d3.scaleLog()
 
         parkSumstat[0]["xDom"] = dom;
 
-       // console.log(parkSumstat);
+        console.log(parkSumstat);
+
         sumstat.push(parkSumstat[0]);
 
     }

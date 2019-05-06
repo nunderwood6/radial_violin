@@ -47,16 +47,32 @@ var parkNames = [
   "Denali_National_Park"
 ];
 
+ parkNames = [ "Olympic_National_Park",
+  "Acadia_National_Park",
+  "Everglades_National_Park",
+  "Denali_National_Park",
+  "Zion_National_Park",
+  "Yellowstone_National_Park",
+  "Petrified_Forest_National_Park",
+  "Mount_Rainier_National_Park",
+  "Grand_Teton_National_Park",
+  "Glacier_National_Park",
+  "Everglades_National_Park",
+  "Crater_Lake_National_Park",
+  "Canyonlands_National_Park",
+  "Big_Bend_National_Park"
+  ]
+
 
 //console.log(w);
 //hexbin generator
 var hexbin = d3.hexbin()
     .extent([[0, 0], [w, h]])
     .x(function x(d){
-      return d.properties.x;
+      return d.x;
     })
     .y(function y(d){
-      return d.properties.y;
+      return d.y;
     })
     .radius(1);
 
@@ -64,11 +80,15 @@ var hexbin = d3.hexbin()
 var radiusScale = d3.scaleSqrt()
     .range([0, 2]);
 
+
+var myInterpolator = d3.interpolateHsl("hsl(60, 24%, 99%)", "hsl(209, 100%, 100%)");
+
 var colorScale = d3.scaleSequential(d3.interpolateMagma);
-    //colorScale =  d3.scaleSequential(d3.interpolateBlues);
+var colorScale2 = d3.scaleSequential(myInterpolator)
+//colorScale =  d3.scaleSequential(d3.interpolateYlOrRd);
 
 var logScale = d3.scaleLog()
-          .range([.25,1]);
+          .range([.35,1]);
 
 //function that makes projection based on park coordinates
 function getProjection(park) {
@@ -89,7 +109,7 @@ function getProjection(park) {
   projection = d3.geoConicEqualArea()
                       .parallels([parallel_one, parallel_two])
                       .rotate([-center[0],0,0])
-                      .scale(35000 * (0.90/height))
+                      .scale(35000 * (1/height))
                    //   .fitSize([w, h], park.geometry)
                       .center([0,center[1]])
                       .translate([w/2,h/2]);
@@ -101,15 +121,15 @@ function getProjection(park) {
 //loads all the photos of a park
 function drawPhotos(photos) {
   console.log(photos);
-
-  photos=photos.features;
+  console.log(boundaries);
+ // photos=photos.features;
 
   for(photo of photos){
-    point=projection(photo.geometry.coordinates);
-      photo.properties["x"]= point[0];
-      photo.properties["y"]= point[1];
+     point=projection([photo.long,photo.lat]);
+      photo.x= point[0];
+      photo.y= point[1];
     }
-
+    console.log(photos);
 //  console.log(photos);
 //  console.log(hexbin(photos));
 //  console.log(d3.extent(hexbin(photos),bin => bin.length));
@@ -164,15 +184,31 @@ mapGroup.selectAll(".photos")
         .enter()
         .append("path")
         .attr("d", function(d){
-          console.log(radiusScale(700));
           return hexbin.hexagon(0.8);
         })
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .attr("fill", function(d){
           return colorScale(logScale(d.length));
         })
+        .attr("opacity", 1);
+
+/*
+//small white hex
+  mapGroup.append("g")
+        .attr("class", "hexagon")
+        .selectAll(".whitehex")
+        .data(hexbin(photos))
+        .enter()
+        .append("path")
+        .attr("d", function(d){
+          return hexbin.hexagon(0.3);
+        })
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .attr("fill", function(d){
+          return "#fff";
+        })
         .attr("opacity", 0.9);
-        
+   */     
 
 
   //       svg.append("g")
@@ -418,28 +454,28 @@ Promise.all([
     for(var box of boxes){
       allParkNames.push(box.properties["UNIT_NAME"].replace( / /g, "_"));
     }
-    //get json urls
-    var files = [];
-    for(var park of parkNames){
-       // console.log(park)
-        files.push(`data/photos/${park}.json`);
-    }
-    //get csv urls
-    // var csvs = [];
+    // //get json urls
+    // var files = [];
     // for(var park of parkNames){
-    //   csvs.push(`data/euclidean/${park}.csv`)
-    // }
+    //    // console.log(park)
+    //     files.push(`data/photos/${park}.json`);
+    //}
+    //get csv urls
+    var csvs = [];
+    for(var park of parkNames){
+      csvs.push(`data/euclidean/${park}.csv`)
+    }
 
      //build array of promises
      var promises = [];
 
-files.forEach(function(url) {
-    promises.push(d3.json(url))
-});
-
-// csvs.forEach(function(url) {
-//     promises.push(d3.csv(url))
+// files.forEach(function(url) {
+//     promises.push(d3.json(url))
 // });
+
+csvs.forEach(function(url) {
+    promises.push(d3.csv(url))
+});
 
 Promise.all(promises).then(function(values) {
     //everything using data in here!
@@ -470,28 +506,30 @@ var randomLogTransform = d3.scaleLog()
     
   var xScale = d3.scaleLinear()
                    // .base(2)
-                    .range([r,0]);
+                    .range([r,50]);
 
   var sumstat = [];
 
-    for(var park of data){
+    for(var j = 0; j < parkNames.length; j++){
+        console.log(j);
+        var park = data[j];
+        var parkName = parkNames[j];
 
-        var photosDist = [];
+        for(var photo of park){
+            photo["name"] = parkName;
+             // if(photo.distance == "0"){
+             //   photo.distance = 1;
+             // }
 
-        for(var photo of park.features){
-         photosDist.push({
-          "name": photo.properties.park,
-          "dist": randomLogTransform(Math.random()+0.01)
-         });
-      }
+        }
 
-    var dom = d3.extent(photosDist.map(photo => photo.dist));
-     // console.log(dom);
+      var domMax = d3.max(park.map(photo => +photo.distance));
 
-     var log = d3.scaleLog()
-                    .domain(dom)
-                    .base(2)
-                    .range([w/2,w/2+r]);
+     var log = d3.scaleLinear()
+                    .domain([0,domMax])
+                    //.base(10)
+                    .range([w/2,w/2+r/2]);
+
 
       var histogram = d3.histogram()
         .domain(log.domain()) //domain
@@ -501,11 +539,12 @@ var randomLogTransform = d3.scaleLog()
       var parkSumstat = d3.nest()  // nest function allows to group the calculation per level of a factor
         .key(function(d) { return d.name})
         .rollup(function(d) {   // For each key..
-          input = d.map(function(g) { return +g.dist;})    // Keep the variable called Sepal_Length
+          input = d.map(function(g) { return +g.distance;})    // Keep the variable called Sepal_Length
+         // console.log(input);
           bins = histogram(input)   // And compute the binning on it.
           return(bins)
         })
-        .entries(photosDist);
+        .entries(park);
 
         //calculate max number in a bin for each park
         var maxNum = 0;
@@ -519,15 +558,17 @@ var randomLogTransform = d3.scaleLog()
         //console.log(maxNum);
         parkSumstat[0]["maxNum"] = maxNum;
 
-        parkSumstat[0]["xDom"] = dom;
+        parkSumstat[0]["xDom"] = log.domain();
 
-       // console.log(parkSumstat);
+        console.log(parkSumstat);
+
         sumstat.push(parkSumstat[0]);
 
     }
 
+console.log(sumstat);
 // set maximum height of a violin
-  var yNum = d3.scaleLinear()
+  var yNum = d3.scaleSqrt()
     .range([0, 20]);
   //.domain([-maxNum,maxNum])
 
@@ -538,8 +579,11 @@ var randomLogTransform = d3.scaleLog()
 
 for(var i; i<sumstat.length; i++){
 
-    yNum.domain([-sumstat[i].maxNum, sumstat[i].maxNum]);
+
+
+    yNum.domain([0, sumstat[i].maxNum]);
     xScale.domain(sumstat[i].xDom);
+    console.log(sumstat[i].xDom);
 
       violinGroup.append("g")
            .datum(sumstat[i])
@@ -557,13 +601,12 @@ for(var i; i<sumstat.length; i++){
                     .style("fill","#7781BA")
                     .attr("d", d3.area()
                                         .y0(function(d){ 
-                                          return(yNum(-d.length));
+                                          return(-1*yNum(d.length));
                                         })
                                         .y1(function(d){ 
                                           return(yNum(d.length)); 
                                         })
                                         .x(function(d){ 
-                                        //  console.log(xScale(d.x0));
                                           return(xScale(d.x0)); 
                                         })
                                         .curve(d3.curveCatmullRom)

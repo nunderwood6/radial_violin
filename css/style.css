@@ -30,17 +30,21 @@ div.outer {
 
 div.inner {
 	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
 p.centerText {
+	font-size: 0.8em;
 	position: absolute;
 	text-align: center;
 }
 
-p.centerText span {
-	line-height: 0.8em;
+p.botRightText {
 	font-size: 0.8em;
-	color: #777;
+	position: absolute;
+	right: 50px;
+	bottom: 25px;
 }
 
 
@@ -122,6 +126,66 @@ div.beforeScrolly p {
 
 
 
+
+
+
+
+
+
+
+#myInput {
+	font-family: proxima-nova, sans-serif;
+	width: 200px;
+	font-size: 1em;
+}
+
+div.autocomplete {
+	position: absolute;
+	right: 25px;
+	top: 25px;
+	color: #000;
+}
+
+
+div.input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+}
+div.input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+div.input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+}
+div.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+div.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+div.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9; 
+}
+div.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
 
 
 
